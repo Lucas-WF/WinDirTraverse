@@ -34,10 +34,14 @@ void ThreadPool::enqueue(const std::function<void()>& job) {
 	condition.notify_one();
 }
 
-void ThreadPool::stop() {
+void ThreadPool::stop(bool drain = false) {
+	if (drain) {
+		std::unique_lock<std::mutex> lock(queue_mtx);
+		condition.wait(lock, [this] { return jobs.empty(); });
+	}
+
 	stopThreads.store(true);
 	condition.notify_all();
-
 	for (std::thread& thread : threads) {
 		if (thread.joinable())
 			thread.join();
