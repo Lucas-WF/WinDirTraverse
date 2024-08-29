@@ -19,6 +19,6 @@ public:
 	bool is_busy();
 	void start();
 	void enqueue(const std::function<void()>& job);
-	void stop(bool drain);
+	void stop(bool drain = false);
 };
 

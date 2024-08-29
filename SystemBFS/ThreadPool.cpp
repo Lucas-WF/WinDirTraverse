@@ -34,7 +34,7 @@ void ThreadPool::enqueue(const std::function<void()>& job) {
 	condition.notify_one();
 }
 
-void ThreadPool::stop(bool drain = false) {
+void ThreadPool::stop(bool drain) {
 	if (drain) {
 		std::unique_lock<std::mutex> lock(queue_mtx);
 		condition.wait(lock, [this] { return jobs.empty(); });
