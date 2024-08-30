@@ -30,7 +30,7 @@ void BFS::listFiles(const std::wstring& dir) {
     } while (FindNextFileW(hFind, &fdFile));
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
+        std::unique_lock<std::mutex> lock(mtx);
         dirQueue.insert(dirQueue.end(), auxQueue.begin(), auxQueue.end());
     }
     cv.notify_one();

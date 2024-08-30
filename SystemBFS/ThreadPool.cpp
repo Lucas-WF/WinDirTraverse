@@ -13,7 +13,7 @@ void ThreadPool::loop() {
 
 			if (stopThreads.load()) return;
 
-			job = std::move(jobs.front());
+			job = jobs.front();
 			jobs.pop();
 		}
 		job();
