@@ -48,10 +48,6 @@ void BFS::traverse() {
         {
             std::unique_lock<std::mutex> lock(mtx);
 
-            cv.wait(lock, [this, &threadPool] {
-                return !dirQueue.empty() || !threadPool.is_busy();
-            });
-
             if (dirQueue.empty() && !threadPool.is_busy()) {
                 break;
             }
@@ -69,7 +65,7 @@ void BFS::traverse() {
             listFiles(curr);
         });
     } while (true);
-
+     
     threadPool.stop();
 }
 

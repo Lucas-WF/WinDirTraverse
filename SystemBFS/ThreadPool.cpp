@@ -15,8 +15,10 @@ void ThreadPool::loop() {
 
 			job = jobs.front();
 			jobs.pop();
+			++activeJobs;
 		}
 		job();
+		--activeJobs;
 	}
 }
 
@@ -37,7 +39,7 @@ void ThreadPool::enqueue(const std::function<void()>& job) {
 void ThreadPool::stop(bool drain) {
 	if (drain) {
 		std::unique_lock<std::mutex> lock(queue_mtx);
-		condition.wait(lock, [this] { return jobs.empty(); });
+		condition.wait(lock, [this] { return jobs.empty() && (activeJobs.load() == 0); });
 	}
 
 	stopThreads.store(true);
@@ -53,7 +55,7 @@ bool ThreadPool::is_busy() {
 	bool poolbusy;
 	{
 		std::unique_lock<std::mutex> lock(queue_mtx);
-		poolbusy = !jobs.empty();
+		poolbusy = !jobs.empty() || (activeJobs.load() > 0);
 	}
 	return poolbusy;
 }

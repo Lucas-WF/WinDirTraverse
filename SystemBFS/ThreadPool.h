@@ -14,6 +14,7 @@ private:
 	std::condition_variable condition;
 	std::vector<std::thread> threads;
 	std::queue<std::function<void()>> jobs;
+	std::atomic<int> activeJobs{ 0 };
 public:
 	std::atomic<bool> stopThreads{ false };
 	bool is_busy();
